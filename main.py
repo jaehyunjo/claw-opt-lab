@@ -1,14 +1,17 @@
 """REPL entry point for the Hermes skeleton.
 
 Usage:
-    python main.py
+    python main.py                    # Azure (default)
+    python main.py --backend gemma    # HuggingFace Gemma
 
-Requires the four Azure env vars (see ``.env.example``). Load ``.env`` in the
-current directory automatically.
+Requires either the four ``AZURE_OPENAI_*`` env vars (see ``.env.example``)
+or ``HUGGINGFACE_TOKEN`` for the Gemma backend. ``.env`` in the current
+directory is loaded automatically.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import sys
@@ -24,6 +27,8 @@ shim.install_shim()
 from tools.registry import registry, discover_builtin_tools  # noqa: E402
 from core.agent import run_conversation  # noqa: E402
 from core.azure import AzureConfigError  # noqa: E402
+from core.backends import ALL_BACKENDS, BACKEND_AZURE, get_backend  # noqa: E402
+from core.gemma import GemmaConfigError  # noqa: E402
 from core.prompt import build_system_prompt  # noqa: E402
 
 
@@ -44,13 +49,25 @@ def _print_assistant(text: str) -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Hermes skeleton REPL")
+    parser.add_argument("--backend", choices=ALL_BACKENDS, default=BACKEND_AZURE,
+                        help="LLM backend: azure (default) or gemma (HuggingFace Inference)")
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(name)s: %(message)s")
 
     discover_builtin_tools()
     system_prompt = build_system_prompt()
     tool_names = registry.get_all_tool_names()
 
+    try:
+        client, deployment = get_backend(args.backend)
+    except (AzureConfigError, GemmaConfigError) as e:
+        print(f"Config error: {e}", file=sys.stderr)
+        return 2
+
     print(f"Hermes skeleton — {len(tool_names)} tools registered")
+    print(f"Backend: {args.backend}  ({deployment})")
     print(f"System prompt: {len(system_prompt)} chars")
     print("Type a message; Ctrl-D or 'exit' to quit.\n")
 
@@ -67,13 +84,12 @@ def main() -> int:
                 user_message=line,
                 system_prompt=system_prompt,
                 enabled_tools=tool_names,
+                client=client,
+                deployment=deployment,
                 on_assistant_text=_print_assistant,
                 on_tool_call=_print_tool_call,
                 on_tool_result=_print_tool_result,
             )
-        except AzureConfigError as e:
-            print(f"Config error: {e}", file=sys.stderr)
-            return 2
         except Exception as e:  # surfacing any runtime error cleanly for the REPL
             print(f"ERROR: {type(e).__name__}: {e}", file=sys.stderr)
 

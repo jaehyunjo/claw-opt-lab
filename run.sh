@@ -71,7 +71,7 @@ cmd_test() {
 
 cmd_repl() {
   activate
-  python main.py
+  python main.py "$@"
 }
 
 main() {

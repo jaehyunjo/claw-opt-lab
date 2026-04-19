@@ -45,15 +45,21 @@ shim.install_shim()
 
 from tools.registry import registry, discover_builtin_tools  # noqa: E402
 from core.agent import run_conversation  # noqa: E402
-from core.azure import AzureConfigError, get_client, get_deployment  # noqa: E402
+from core.azure import AzureConfigError  # noqa: E402
+from core.backends import ALL_BACKENDS, BACKEND_AZURE, get_backend  # noqa: E402
 from core.cassette import (  # noqa: E402
     RecordingClient, ReplayClient,
     CassetteMissingError, CassetteExhaustedError,
 )
+from core.gemma import GemmaConfigError  # noqa: E402
 from core.prompt import build_system_prompt  # noqa: E402
 from core.skill_loader import load_skill_index  # noqa: E402
 
-CASSETTE_DIR = ROOT / "cassettes"
+CASSETTE_ROOT = ROOT / "cassettes"
+
+
+def cassette_dir(backend: str) -> Path:
+    return CASSETTE_ROOT / backend
 
 
 # ── ANSI helpers (off when stdout isn't a tty) ─────────────────────────────
@@ -162,47 +168,55 @@ def _redact(s: str | None, keep: int = 4) -> str:
     return f"{s[:keep]}…{s[-keep:]}"
 
 
-def print_config(mode: str) -> None:
+def print_config(mode: str, backend: str) -> None:
     print(bold("[config]"))
     print(f"  {'mode':28s} {mode}")
+    print(f"  {'backend':28s} {backend}")
     if mode in ("record", "live"):
-        for key in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT", "AZURE_OPENAI_API_VERSION"):
-            print(f"  {key:28s} {os.environ.get(key, '(unset)')}")
-        print(f"  {'AZURE_OPENAI_API_KEY':28s} {_redact(os.environ.get('AZURE_OPENAI_API_KEY'))}")
+        if backend == "azure":
+            for key in ("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT", "AZURE_OPENAI_API_VERSION"):
+                print(f"  {key:28s} {os.environ.get(key, '(unset)')}")
+            print(f"  {'AZURE_OPENAI_API_KEY':28s} {_redact(os.environ.get('AZURE_OPENAI_API_KEY'))}")
+        elif backend == "gemma":
+            print(f"  {'GEMMA_HF_REPO':28s} {os.environ.get('GEMMA_HF_REPO', 'litert-community/gemma-4-E2B-it-litert-lm')}")
+            print(f"  {'GEMMA_MODEL_FILE':28s} {os.environ.get('GEMMA_MODEL_FILE', 'gemma-4-E2B-it.litertlm')}")
+            override = os.environ.get("GEMMA_MODEL_PATH")
+            if override:
+                print(f"  {'GEMMA_MODEL_PATH':28s} {override}")
+            token = os.environ.get("HUGGINGFACE_TOKEN") or os.environ.get("HF_TOKEN")
+            print(f"  {'HUGGINGFACE_TOKEN':28s} {_redact(token)}")
     else:
-        print(f"  {'cassette dir':28s} {CASSETTE_DIR.relative_to(ROOT)}")
+        print(f"  {'cassette dir':28s} {cassette_dir(backend).relative_to(ROOT)}")
     print()
 
 
 # ── Per-scenario runner ────────────────────────────────────────────────────
 
 def _run_one(scenario: Scenario, system_prompt: str, tool_names: List[str],
-             idx: int, total: int, max_iters: int, mode: str,
+             idx: int, total: int, max_iters: int, mode: str, backend: str,
              summary_only: bool) -> RunResult:
     result = RunResult(scenario=scenario)
 
-    cassette_path = CASSETTE_DIR / f"{scenario.name}.json"
+    cassette_path = cassette_dir(backend) / f"{scenario.name}.json"
     try:
         if mode == "replay":
             client = ReplayClient(cassette_path)
             deployment = "replay"
             recording = None
         elif mode == "record":
-            real = get_client()
-            deployment = get_deployment()
+            real, deployment = get_backend(backend)
             recording = RecordingClient(real, cassette_path, model_hint=deployment)
             client = recording
         elif mode == "live":
-            client = get_client()
-            deployment = get_deployment()
+            client, deployment = get_backend(backend)
             recording = None
         else:
             raise ValueError(f"unknown mode: {mode}")
     except CassetteMissingError as e:
         result.error = str(e)
         return result
-    except AzureConfigError as e:
-        result.error = f"AzureConfigError: {e}"
+    except (AzureConfigError, GemmaConfigError) as e:
+        result.error = f"{type(e).__name__}: {e}"
         return result
 
     buf = io.StringIO() if not summary_only else None
@@ -283,7 +297,7 @@ def _truncate(s: str, width: int) -> str:
     return s if len(s) <= width else s[: width - 1] + "…"
 
 
-def print_summary(results: List[RunResult], mode: str) -> None:
+def print_summary(results: List[RunResult], mode: str, backend: str) -> None:
     if not results:
         return
 
@@ -303,7 +317,7 @@ def print_summary(results: List[RunResult], mode: str) -> None:
     sep = "─" * len(header)
 
     print()
-    print(bold(f"── Summary ({mode}) ──"))
+    print(bold(f"── Summary ({mode} / {backend}) ──"))
     print(sep)
     print(bold(header))
     print(sep)
@@ -382,7 +396,9 @@ def main() -> int:
     parser.add_argument("--prompt", action="append",
                         help="Custom prompt (live mode only); may be passed multiple times")
     parser.add_argument("--mode", choices=("replay", "record", "live"), default="replay",
-                        help="replay cassettes (default), record fresh cassettes, or call Azure without caching")
+                        help="replay cassettes (default), record fresh cassettes, or call the live backend without caching")
+    parser.add_argument("--backend", choices=ALL_BACKENDS, default=BACKEND_AZURE,
+                        help="LLM backend: azure (default) or gemma (HuggingFace Inference)")
     parser.add_argument("--max-iterations", type=int, default=6,
                         help="Max agent-loop iterations per turn (default: 6)")
     parser.add_argument("--summary-only", action="store_true",
@@ -393,12 +409,16 @@ def main() -> int:
 
     if args.list:
         width = max(len(s.name) for s in SCENARIOS)
+        cdir = cassette_dir(args.backend)
         for s in SCENARIOS:
-            cassette = CASSETTE_DIR / f"{s.name}.json"
+            cassette = cdir / f"{s.name}.json"
             marker = green("●") if cassette.exists() else dim("○")
             print(f"  {marker}  {s.name:<{width}}  expect: {s.expect}")
         print()
-        print(dim(f"Total: {len(SCENARIOS)} scenarios   (● = cassette present, ○ = missing)"))
+        print(dim(
+            f"Total: {len(SCENARIOS)} scenarios   backend={args.backend}   "
+            f"(● = cassette present at {cdir.relative_to(ROOT)}, ○ = missing)"
+        ))
         return 0
 
     if args.prompt and args.mode == "replay":
@@ -414,13 +434,24 @@ def main() -> int:
 
     discover_builtin_tools()
     tool_names = registry.get_all_tool_names()
-    system_prompt = build_system_prompt()
+    # Gemma-4 E2B is a small on-device model (4K trained context; we extend
+    # the engine to 16K). The default prompt ships all 79 skills (~5K tokens)
+    # which, once combined with 47 tool schemas rendered by the chat template,
+    # overflows the window. For Gemma we keep a short skill listing (the top
+    # GEMMA_MAX_SKILLS names, default 10) so the model still has some
+    # skill-awareness without blowing the context. Azure keeps the full list.
+    if args.backend == "gemma":
+        max_skills = int(os.environ.get("GEMMA_MAX_SKILLS", "10"))
+    else:
+        max_skills = None
+    system_prompt = build_system_prompt(max_skills=max_skills)
     skill_count = len(load_skill_index())
 
     print(bold("Hermes skeleton scenario demo"))
-    print_config(args.mode)
+    print_config(args.mode, args.backend)
+    effective_skills = skill_count if max_skills is None else min(max_skills, skill_count)
     print(dim(
-        f"Tools: {len(tool_names)}   Skills: {skill_count}   "
+        f"Tools: {len(tool_names)}   Skills: {effective_skills}/{skill_count}   "
         f"System prompt: {len(system_prompt)} chars   "
         f"max_iterations={args.max_iterations}"
     ))
@@ -440,12 +471,12 @@ def main() -> int:
     for idx, sc in enumerate(scenarios, start=1):
         r = _run_one(
             sc, system_prompt, tool_names, idx, len(scenarios),
-            args.max_iterations, args.mode, args.summary_only,
+            args.max_iterations, args.mode, args.backend, args.summary_only,
         )
         results.append(r)
     wall = time.time() - wall_start
 
-    print_summary(results, args.mode)
+    print_summary(results, args.mode, args.backend)
     print()
     print(dim(f"wall-clock: {wall:.2f}s"))
 
