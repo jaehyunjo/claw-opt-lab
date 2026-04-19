@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:03:15Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "피보나치 수열 1번째부터 30번째까지 Python으로 계산해서 리스트로 보여줘. 반드시 코드 실행 툴을 사용해.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_fcc6981607d4",
+            "type": "function",
+            "function": {
+              "name": "execute_code",
+              "arguments": "{\"code\": \"def fibonacci_sequence(n):\\n    \\\"\\\"\\\"Calculates the first n numbers of the Fibonacci sequence.\\\"\\\"\\\"\\n    if n <= 0:\\n        return []\\n    if n == 1:\\n        return [0]\\n    \\n    sequence = [0, 1]\\n    while len(sequence) < n:\\n        next_fib = sequence[-1] + sequence[-2]\\n        sequence.append(next_fib)\\n    return sequence\\n\\n# Calculate the first 30 Fibonacci numbers\\nn = 30\\nfib_list = fibonacci_sequence(n)\\n\\n# Print the result as a list\\nprint(fib_list)\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "피보나치 수열 1번째부터 30번째까지 Python으로 계산해서 리스트로 보여줘. 반드시 코드 실행 툴을 사용해.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "피보나치 수열의 첫 번째부터 30번째까지의 값을 계산한 결과는 다음과 같습니다.\n\n```\n[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368]\n```",
+        "tool_calls": null
+      }
+    }
+  ]
+}

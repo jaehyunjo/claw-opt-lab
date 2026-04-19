@@ -1,0 +1,60 @@
+{
+  "recorded_at": "2026-04-19T08:43:07Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_1510d63b778f",
+            "type": "function",
+            "function": {
+              "name": "clarify",
+              "arguments": "{\"question\": \"어떤 것을 정리해 드릴까요? (예: 메모, 할 일 목록, 웹 정보, 코드 등)\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_d01ce1d9c16e",
+            "type": "function",
+            "function": {
+              "name": "clarify",
+              "arguments": "{\"question\": \"어떤 것을 정리해 드릴까요? (예: 메모, 할 일 목록, 웹 정보, 코드 등)\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 6,
+        "last_user": "정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "{\"tool\": \"clarify\", \"args\": {\"question\": \"어떤 것을 정리해 드릴까요? (예: 메모, 할 일 목록, 웹 정보, 코드 등)\"}}",
+        "tool_calls": null
+      }
+    }
+  ]
+}

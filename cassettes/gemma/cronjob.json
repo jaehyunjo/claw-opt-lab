@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:34:27Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "확인 묻지 말고 바로 `cronjob` 툴을 호출해서 아래 작업을 등록해. action=create, schedule='0 9 * * *', message='스탠드업 시간입니다', name='daily-standup-reminder'. terminal이나 write_file 같은 다른 ",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_da36e9bee109",
+            "type": "function",
+            "function": {
+              "name": "cronjob",
+              "arguments": "{\"action\": \"create\", \"name\": \"daily-standup-reminder\", \"prompt\": \"스탠드업 시간입니다\", \"schedule\": \"0 9 * * *\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "확인 묻지 말고 바로 `cronjob` 툴을 호출해서 아래 작업을 등록해. action=create, schedule='0 9 * * *', message='스탠드업 시간입니다', name='daily-standup-reminder'. terminal이나 write_file 같은 다른 ",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "Cron job 'daily-standup-reminder'가 성공적으로 생성되어 '0 9 * * *'에 스케줄링되었습니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

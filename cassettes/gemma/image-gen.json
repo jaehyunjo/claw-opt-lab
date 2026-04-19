@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:11:37Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "노트북 앞에 앉아있는 고양이 일러스트를 수채화 스타일로 하나 생성해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_6e7b67db8d94",
+            "type": "function",
+            "function": {
+              "name": "image_generate",
+              "arguments": "{\"prompt\": \"A watercolor style illustration of a cat sitting in front of a laptop.\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "노트북 앞에 앉아있는 고양이 일러스트를 수채화 스타일로 하나 생성해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "생성된 이미지를 확인했습니다.\n\n[https://mock.example.com/generated.png](https://mock.example.com/generated.png)\n\n이 이미지가 원하시는 수채화 스타일의 노트북 앞에 앉아있는 고양이 일러스트가 맞나요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

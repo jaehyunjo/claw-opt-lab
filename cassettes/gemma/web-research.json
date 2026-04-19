@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T07:57:41Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_45a98b6ac659",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\": \"LLM routing trends and blog posts\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "죄송합니다. 제가 현재 사용 가능한 도구로는 실제 웹 검색을 수행할 수 없습니다. 제공해주신 결과는 가짜(mock) 결과이므로, 실제 블로그 포스트를 찾고 요약하는 작업을 수행할 수 없습니다.\n\n실제 블로그 포스트를 찾기 위해서는 `web_search` 도구를 사용하여 실제 웹 검색을 수행해야 합니다.\n\n혹시 제가 **실제 웹 검색**을 수행하도록 지시할 수 있을까요? 아니면 다른 도움이 필요하신가요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

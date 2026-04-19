@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:39:26Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "지금 사용 가능한 skill들을 5개 정도만 이름과 간단 설명으로 알려줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_19ae94921cdb",
+            "type": "function",
+            "function": {
+              "name": "skills_list",
+              "arguments": "{}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "지금 사용 가능한 skill들을 5개 정도만 이름과 간단 설명으로 알려줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "Hermes입니다. 현재 사용 가능한 스킬 중 5가지를 이름과 간단한 설명을 알려드리겠습니다.\n\n1.  **architecture-diagram**: 소프트웨어 시스템 및 클라우드 인프라에 대한 다크 테마 SVG 다이어그램을 생성합니다.\n2.  **arxiv**: arXiv에서 학술 논문을 검색하고 검색합니다.\n3.  **ascii-art**: pyfiglet 등을 사용하여 ASCII 아트를 생성합니다.\n4.  **claude-code**: Claude Code CLI 에이전트를 사용하여 코딩 작업을 위임합니다.\n5.  **blogwatcher**: blogwatcher-cli 도구를 사용하여 블로그 및 RSS/Atom 피드를 모니터링합니다.\n\n더 궁금한 점이 있으신가요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:05:15Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "내 이름은 재현이고 백엔드 개발을 주로 한다는 점을 memory 툴을 이용해 기억해 둬.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_dea35298a2a5",
+            "type": "function",
+            "function": {
+              "name": "memory",
+              "arguments": "{\"action\": \"add\", \"content\": \"이 사용자의 이름은 재현이며, 주로 백엔드 개발을 한다는 점을 기억한다.\", \"target\": \"user\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "내 이름은 재현이고 백엔드 개발을 주로 한다는 점을 memory 툴을 이용해 기억해 둬.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "재현 님, 기억해 두었습니다. 앞으로 백엔드 개발에 관한 요청이 있으시면 제가 도와드리겠습니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

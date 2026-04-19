@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:24:04Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "`vision_analyze` 툴을 (browser_vision 말고 꼭 vision_analyze) 사용해서 /tmp/screenshot.png 로컬 이미지 파일을 분석해줘. 파일은 이미 존재하니 확인 묻지 말고 바로 호출.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_f05939a4b683",
+            "type": "function",
+            "function": {
+              "name": "vision_analyze",
+              "arguments": "{\"image_url\": \"/tmp/screenshot.png\", \"question\": \"이미지 내용을 분석해 주세요.\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "`vision_analyze` 툴을 (browser_vision 말고 꼭 vision_analyze) 사용해서 /tmp/screenshot.png 로컬 이미지 파일을 분석해줘. 파일은 이미 존재하니 확인 묻지 말고 바로 호출.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "제공해주신 `/tmp/screenshot.png` 파일의 분석 결과는 다음과 같습니다:\n\n**분석 요약:**\n이미지는 데스크톱 스크린샷으로 보이며, 왼쪽에는 Python 소스 코드가 보이는 코드 편집기가 있고, 오른쪽에는 명령어 출력(터미널)이 표시되어 있습니다. 메뉴 바와 몇 개의 패널이 보입니다.\n\n**주요 탐지 객체:**\n*   창문 (window)\n*   코드 편집기 (code editor)\n*   터미널 (terminal)\n*   텍스트 (text)\n\n**신뢰도:** 0.86\n\n이 스크린샷에 대해 더 구체적으로 알고 싶은 부분이 있으신가요? 예를 들어, 코드 내용, 터미널 출력의 특정 부분, 또는 편집기 구성 등에 대해 질문해주시면 분석해 드릴 수 있습니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

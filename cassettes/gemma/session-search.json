@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:36:46Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "지난 대화들 중에서 내가 'LLM routing'이나 'on-device LLM'에 대해 뭐라고 언급했는지 session_search로 찾아서 2-3줄로 정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_133c112ab810",
+            "type": "function",
+            "function": {
+              "name": "session_search",
+              "arguments": "{\"query\": \"LLM routing OR on-device LLM\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "지난 대화들 중에서 내가 'LLM routing'이나 'on-device LLM'에 대해 뭐라고 언급했는지 session_search로 찾아서 2-3줄로 정리해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "지난 대화에서 'LLM routing'이나 'on-device LLM'에 대해 언급하신 내용은 다음과 같습니다:\n\n이전 세션에서 해당 주제에 대해 언급하셨으며, 구체적인 내용은 검색 결과에 포함되어 있습니다. 더 자세한 내용을 확인하시려면 해당 세션(sess_abc)을 참조해 주시기 바랍니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T08:32:13Z",
+  "model": "gemma-4-E2B-it.litertlm",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "https://www.python.org/about/ 페이지의 핵심 내용을 한국어로 3줄 요약해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_19e8146af0c4",
+            "type": "function",
+            "function": {
+              "name": "web_extract",
+              "arguments": "{\"urls\": [\"https://www.python.org/about/\"]}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "https://www.python.org/about/ 페이지의 핵심 내용을 한국어로 3줄 요약해줘.",
+        "tool_count": 47,
+        "model": "gemma-4-E2B-it.litertlm"
+      },
+      "response": {
+        "content": "Python은 오픈 소스 언어로, 개발자들에게 강력하고 유연한 프로그래밍 환경을 제공합니다. 방대한 라이브러리와 커뮤니티 지원을 통해 웹 개발, 데이터 과학, 인공지능 등 광범위한 분야에서 사용되고 있습니다. Python은 배우기 쉽고 생산성이 높아 전 세계적으로 가장 인기 있는 프로그래밍 언어 중 하나입니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}
