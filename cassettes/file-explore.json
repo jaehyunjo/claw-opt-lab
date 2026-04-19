@@ -1,0 +1,102 @@
+{
+  "recorded_at": "2026-04-19T00:30:18Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "현재 프로젝트 디렉토리에서 파일명에 'registry'가 들어간 Python 파일을 찾고, 그 파일이 어떤 역할을 하는지 한국어로 2-3문장으로 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_kT619sb3OWl1RSWd8UAA9TKp",
+            "type": "function",
+            "function": {
+              "name": "search_files",
+              "arguments": "{\"pattern\":\"*registry*.py\",\"target\":\"files\",\"path\":\".\",\"limit\":50}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "현재 프로젝트 디렉토리에서 파일명에 'registry'가 들어간 Python 파일을 찾고, 그 파일이 어떤 역할을 하는지 한국어로 2-3문장으로 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_F2tqCyHQYvTYarCb0WS8EM4n",
+            "type": "function",
+            "function": {
+              "name": "search_files",
+              "arguments": "{\"pattern\":\"*registry*.py\",\"target\":\"files\",\"path\":\".\",\"limit\":50}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 6,
+        "last_user": "현재 프로젝트 디렉토리에서 파일명에 'registry'가 들어간 Python 파일을 찾고, 그 파일이 어떤 역할을 하는지 한국어로 2-3문장으로 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_sLPmq0HGYhMGWkVUshzJAzyC",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\":\"./src/utils/registry.py\",\"offset\":1,\"limit\":200}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 8,
+        "last_user": "현재 프로젝트 디렉토리에서 파일명에 'registry'가 들어간 Python 파일을 찾고, 그 파일이 어떤 역할을 하는지 한국어로 2-3문장으로 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_vUjpE3iC8hCdrUVHrK7nKG7t",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\":\"./src/utils/registry.py\",\"offset\":1,\"limit\":200}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 10,
+        "last_user": "현재 프로젝트 디렉토리에서 파일명에 'registry'가 들어간 Python 파일을 찾고, 그 파일이 어떤 역할을 하는지 한국어로 2-3문장으로 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "찾은 파일:\n- ./src/utils/registry.py\n\n요약(한국어, 2문장):\n이 파일은 이름 기반으로 클래스나 함수 같은 구성 요소를 등록하고 조회하는 레지스트리 패턴을 구현합니다. 내부에 등록/조회용 함수(또는 데코레이터)와 저장용 딕셔너리를 두어 플러그인·핸들러·팩토리 같은 확장 가능한 컴포넌트를 관리하도록 돕습니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

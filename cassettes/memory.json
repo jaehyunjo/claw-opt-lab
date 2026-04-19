@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:30:44Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "내 이름은 재현이고 백엔드 개발을 주로 한다는 점을 memory 툴을 이용해 기억해 둬.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_G5osS7cIPPEUiGroXpv6lJeB",
+            "type": "function",
+            "function": {
+              "name": "memory",
+              "arguments": "{\"action\":\"add\",\"target\":\"user\",\"content\":\"이름: 재현. 직업/주된 역할: 백엔드 개발자(주로 백엔드 개발을 담당함).\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "내 이름은 재현이고 백엔드 개발을 주로 한다는 점을 memory 툴을 이용해 기억해 둬.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "기억해 뒀어, 재현님. 앞으로 대화할 때 이걸 참고할게. 다른 선호사항도 기억해 둘까? (예: 개발 언어, 작업 스타일, 시간대)",
+        "tool_calls": null
+      }
+    }
+  ]
+}

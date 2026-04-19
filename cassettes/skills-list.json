@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:50:10Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "지금 사용 가능한 skill들을 5개 정도만 이름과 간단 설명으로 알려줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_HaGviNpNpHwqiCLzkXq7xXy3",
+            "type": "function",
+            "function": {
+              "name": "skills_list",
+              "arguments": "{}\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "지금 사용 가능한 skill들을 5개 정도만 이름과 간단 설명으로 알려줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "다음 다섯 가지 스킬을 예시로 소개할게요 — 이름 + 한 줄 설명입니다.\n\n- architecture-diagram: 다크 테마 SVG 기반의 소프트웨어/클라우드 아키텍처 다이어그램을 생성합니다.  \n- powerpoint: .pptx 슬라이드 생성·읽기·편집 전반(피치덱, 스피커 노트 포함)을 지원합니다.  \n- jupyter-live-kernel: 상태를 유지하는 대화형 Jupyter 커널로 파이썬 실험·분석·반복 작업을 실행합니다.  \n- stable-diffusion-image-generation: 텍스트 프롬프트로 고품질 이미지를 생성합니다(이미지·인페인팅 포함).  \n- whisper: 다국어 음성 인식·전사(또는 영어 번역)를 수행합니다.\n\n원하면 다른 스킬 추천이나 각 스킬의 활용 예시도 바로 보여줄게요. 어느 쪽을 원하시나요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

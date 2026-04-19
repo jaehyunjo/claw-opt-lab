@@ -1,0 +1,132 @@
+{
+  "recorded_at": "2026-04-19T00:29:35Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_H6phsajqxLuDn2IzSnMKcv4N",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\":\"LLM routing blog post recent\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_0i9XIhP5z1lYOkdkjKu42Yoa",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\":\"\\\"LLM routing\\\" blog post 2023 2024 2025\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 6,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_VjzPe0dqYISKBKWDvtMgxf23",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\":\"LLM router blog post\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 8,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_ZnmqHVXlGEiWbsMkTFrO7DDG",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\":\"\\\"model router\\\" \\\"LLM\\\" blog 2024\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 10,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_jorjemvSuTUsjiBUwYHq6gDN",
+            "type": "function",
+            "function": {
+              "name": "clarify",
+              "arguments": "{\"question\":\"원하시는 결과 형식이 어떻게 되나요?(언어 및 링크 포함 여부 선택)\",\"choices\":[\"영문 블로그 원문과 링크 포함\",\"한국어 요약(원문 링크 포함)\",\"한국어 제목+한 줄 요약만(링크 미포함)\"]}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 12,
+        "last_user": "'LLM routing' 관련 최근 블로그 포스트 3개를 찾아서 각 제목과 한 줄 요약으로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_4bcqXCr7tlShzrzugjXitidU",
+            "type": "function",
+            "function": {
+              "name": "web_search",
+              "arguments": "{\"query\":\"\\\"LLM routing\\\" blog 2024 \\\"routing\\\" models\"}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

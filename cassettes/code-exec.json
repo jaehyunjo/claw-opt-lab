@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:30:36Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "피보나치 수열 1번째부터 30번째까지 Python으로 계산해서 리스트로 보여줘. 반드시 코드 실행 툴을 사용해.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_feBU1NM0rSVPK8ssye6H75yZ",
+            "type": "function",
+            "function": {
+              "name": "execute_code",
+              "arguments": "{\"code\":\"def fib_list(n):\\n    a, b = 1, 1\\n    res = []\\n    for _ in range(n):\\n        res.append(a)\\n        a, b = b, a + b\\n    return res\\n\\nprint(fib_list(30))\\n\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "피보나치 수열 1번째부터 30번째까지 Python으로 계산해서 리스트로 보여줘. 반드시 코드 실행 툴을 사용해.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "다음은 1번째부터 30번째까지의 피보나치 수열을 계산한 결과입니다 (Python으로 실행함):\n\n[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040]",
+        "tool_calls": null
+      }
+    }
+  ]
+}

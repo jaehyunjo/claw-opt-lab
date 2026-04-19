@@ -1,0 +1,60 @@
+{
+  "recorded_at": "2026-04-19T00:31:31Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "hello.py라는 파일에 'Hello World'를 출력하는 파이썬 한 줄짜리 스크립트를 만들고, 'add hello.py'라는 메시지로 git commit까지 해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_ttWqaSyF3Q2iTBmR5vELuJcv",
+            "type": "function",
+            "function": {
+              "name": "write_file",
+              "arguments": "{\"path\":\"hello.py\",\"content\":\"print(\\\"Hello World\\\")\\n\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "hello.py라는 파일에 'Hello World'를 출력하는 파이썬 한 줄짜리 스크립트를 만들고, 'add hello.py'라는 메시지로 git commit까지 해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_7c8JQ8VMI1rwwOBa8FItPVvc",
+            "type": "function",
+            "function": {
+              "name": "terminal",
+              "arguments": "{\"command\":\"git add hello.py && git commit -m \\\"add hello.py\\\"\",\"timeout\": 120000}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 6,
+        "last_user": "hello.py라는 파일에 'Hello World'를 출력하는 파이썬 한 줄짜리 스크립트를 만들고, 'add hello.py'라는 메시지로 git commit까지 해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "작업 완료했습니다.\n\n요약:\n- hello.py 파일을 만들고 내용 추가:\n  - print(\"Hello World\")\n- Git에 파일을 추가하고 커밋 메시지 \"add hello.py\"로 커밋했습니다.\n\n원하시면 커밋 로그 확인, 원격 푸시, 또는 파일 수정/확장도 도와드릴게요. 무엇을 도와드릴까요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

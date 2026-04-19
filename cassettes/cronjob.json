@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T01:13:46Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "확인 묻지 말고 바로 `cronjob` 툴을 호출해서 아래 작업을 등록해. action=create, schedule='0 9 * * *', message='스탠드업 시간입니다', name='daily-standup-reminder'. terminal이나 write_file 같은 다른 ",
+        "tool_count": 47,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_5aoBeVvsIFaIRODXJwuqhgmj",
+            "type": "function",
+            "function": {
+              "name": "cronjob",
+              "arguments": "{\"action\":\"create\",\"schedule\":\"0 9 * * *\",\"name\":\"daily-standup-reminder\",\"prompt\":\"Send the message '스탠드업 시간입니다' to the current chat. This is a daily stand-up reminder scheduled to run at 09:00 every day. The cron run should simply deliver the single-line message and not perform any other actions.\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "확인 묻지 말고 바로 `cronjob` 툴을 호출해서 아래 작업을 등록해. action=create, schedule='0 9 * * *', message='스탠드업 시간입니다', name='daily-standup-reminder'. terminal이나 write_file 같은 다른 ",
+        "tool_count": 47,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "등록 완료했습니다: job_id=job_mock_7376, 이름=daily-standup-reminder, 스케줄=0 9 * * *.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

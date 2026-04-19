@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:47:12Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "https://www.python.org/about/ 페이지의 핵심 내용을 한국어로 3줄 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_IJJdH84zUkthDfhYNBY0OSKT",
+            "type": "function",
+            "function": {
+              "name": "web_extract",
+              "arguments": "{\"urls\":[\"https://www.python.org/about/\"]}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "https://www.python.org/about/ 페이지의 핵심 내용을 한국어로 3줄 요약해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "Python은 읽기 쉽고 배우기 쉬운 고수준 범용 프로그래밍 언어로, 생산성과 코드 가독성을 중시해 초보자와 전문가 모두에게 적합합니다.\n오픈 소스 언어로 방대한 표준 라이브러리와 활발한 커뮤니티(Python Software Foundation, PyPI 등)를 통해 웹 개발, 데이터 과학, 자동화 등 다양한 분야에서 널리 활용됩니다.\n언어 철학은 간결함과 명확성을 지향하며 지속적으로 발전·지원되어 안정적이고 확장 가능한 생태계를 제공합니다.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

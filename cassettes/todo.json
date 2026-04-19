@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:30:56Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "오늘 할 일 3개를 추가해줘: 1) PR #142 리뷰 답변, 2) API 문서 업데이트, 3) 내일 스탠드업 자료 준비.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_9s3fopLuv9yNpOoltDgmJ87x",
+            "type": "function",
+            "function": {
+              "name": "todo",
+              "arguments": "{\"todos\":[{\"id\":\"pr-142-review-reply\",\"content\":\"PR #142 리뷰에 답변 남기기\",\"status\":\"pending\"},{\"id\":\"update-api-docs\",\"content\":\"API 문서 업데이트\",\"status\":\"pending\"},{\"id\":\"prepare-standup-tomorrow\",\"content\":\"내일 스탠드업 자료 준비\",\"status\":\"pending\"}],\"merge\":true}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "오늘 할 일 3개를 추가해줘: 1) PR #142 리뷰 답변, 2) API 문서 업데이트, 3) 내일 스탠드업 자료 준비.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "작업 목록에 다음 3개 항목을 추가해 두었습니다.\n1) PR #142 리뷰에 답변 남기기\n2) API 문서 업데이트\n3) 내일 스탠드업 자료 준비\n\n원하시면 각 항목에 마감일, 우선순위, 또는 세부 체크리스트를 추가해 드릴게요. 어떤 항목부터 진행할까요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}

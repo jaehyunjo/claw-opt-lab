@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:31:14Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "노트북 앞에 앉아있는 고양이 일러스트를 수채화 스타일로 하나 생성해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_iTavfnjU3CVxyZMK0bDjOpYC",
+            "type": "function",
+            "function": {
+              "name": "image_generate",
+              "arguments": "{\"prompt\":\"수채화 스타일의 일러스트: 노트북 앞에 앉아 있는 고양이(중간 샷, 3/4 시점). 부드러운 브러시 스트로크와 옅은 물감 번짐(wash), 종이 질감이 느껴지도록 표현. 따뜻한 실내 조명, 아늑한 책상 위 풍경(커피 컵, 작은 식물 약간). 파스텔 톤의 팔레트(연한 블루, 민트, 로즈, 크림)와 약한 잉크 라인으로 디테일 강조. 자연스러운 포즈(앞발을 책상에 올리거나 키보드 위에 올린 모습), 귀여운 표정(약간 집중한 눈빛). 고해상도, 일러스트레이션용, 애니메풍이 아닌 부드럽고 사실적인 수채화 느낌.\",\"aspect_ratio\":\"square\"}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "노트북 앞에 앉아있는 고양이 일러스트를 수채화 스타일로 하나 생성해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "이미지를 생성했어요. 아래 링크에서 확인하세요:\n![수채화 고양이 일러스트](https://example.com/generated-image.png)\n\n원하시는 스타일이나 디테일(고양이 색상, 표정, 소품 추가/삭제 등)이 있으면 알려주세요. 수정해서 다시 만들어 드릴게요.",
+        "tool_calls": null
+      }
+    }
+  ]
+}

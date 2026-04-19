@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-04-19T00:49:45Z",
+  "model": "gpt-5-mini",
+  "calls": [
+    {
+      "request": {
+        "n_messages": 2,
+        "last_user": "지난 대화들 중에서 내가 'LLM routing'이나 'on-device LLM'에 대해 뭐라고 언급했는지 session_search로 찾아서 2-3줄로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_lYWYfQOeCzQzN6R5SuLDeSkp",
+            "type": "function",
+            "function": {
+              "name": "session_search",
+              "arguments": "{\"query\":\"LLM routing OR \\\"on-device LLM\\\"\",\"limit\":5}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "n_messages": 4,
+        "last_user": "지난 대화들 중에서 내가 'LLM routing'이나 'on-device LLM'에 대해 뭐라고 언급했는지 session_search로 찾아서 2-3줄로 정리해줘.",
+        "tool_count": 31,
+        "model": "gpt-5-mini"
+      },
+      "response": {
+        "content": "세션 검색 결과, \"LLM routing\"이나 \"on-device LLM\"이라는 정확한 표현으로 된 과거 언급은 발견되지 않았습니다. 다른 키워드(예: routing, edge LLM, on-device, federated inference)로 다시 검색해볼까요?",
+        "tool_calls": null
+      }
+    }
+  ]
+}
