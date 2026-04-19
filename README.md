@@ -6,7 +6,7 @@ A stripped-down agent skeleton for **LLM optimization experiments** — routing 
 - **All tool handlers mocked** — no real filesystem / network / process side effects
 - **79 skills** indexed into the system prompt for skill-aware behavior
 - **Cassette record/replay** — hit the backend once, replay instantly thereafter
-- **Switchable backends** — cloud Azure OpenAI (`gpt-5-mini`) or on-desktop Gemma (`gemma-4-E2B-it.litertlm` via LiteRT-LM, same weights [`gemmaclaw`](https://github.com/jaehyunjo/gemmaclaw) runs on-device)
+- **Switchable backends** — cloud Azure OpenAI (`gpt-5-mini`) or on-desktop Gemma (`gemma-4-E2B-it.litertlm` via LiteRT-LM)
 - **16 Korean scenario demos** covering email, web research, code exec, file ops, cron, vision, and more
 
 ## Quick start
@@ -51,7 +51,7 @@ claw-opt-lab/
 ├── core/
 │   ├── shim.py              # MagicMock deleted modules; monkey-patch registry
 │   ├── azure.py             # AzureOpenAI client (env-driven)
-│   ├── gemma.py             # LiteRT-LM Gemma-4 E2B client (same .litertlm as gemmaclaw)
+│   ├── gemma.py             # LiteRT-LM Gemma-4 E2B client
 │   ├── backends.py          # Backend factory: azure | gemma → (client, deployment)
 │   ├── agent.py             # Agent loop: LLM → tool dispatch → repeat
 │   ├── cassette.py          # Record/replay backend responses (backend-agnostic)
@@ -74,7 +74,7 @@ claw-opt-lab/
 | Backend  | Where it runs           | What drives inference                                  |
 |----------|-------------------------|--------------------------------------------------------|
 | `azure`  | cloud                   | Azure OpenAI `gpt-5-mini` via the `openai` SDK         |
-| `gemma`  | local CPU (macOS/Linux) | `litert-lm-api` loads `gemma-4-E2B-it.litertlm` directly — the same bundle `gemmaclaw` ships on-device |
+| `gemma`  | local CPU (macOS/Linux) | `litert-lm-api` loads `gemma-4-E2B-it.litertlm` directly from the `litert-community` HF repo |
 
 Both expose the same OpenAI-shape `chat.completions.create` to the agent loop, so the record/replay cassette layer, tests, and scenario table don't care which one you pick.
 

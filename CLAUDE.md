@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Backends (switchable via `--backend {azure,gemma}`):
 
 - **`azure`** — Azure OpenAI `gpt-5-mini` via the `openai` SDK. Default.
-- **`gemma`** — local CPU inference of `gemma-4-E2B-it.litertlm` (2.58 GB) through `litert-lm-api`. Same weights `gemmaclaw` ships on-device. First run downloads the gated bundle from `litert-community/gemma-4-E2B-it-litert-lm` via `huggingface_hub` using `HUGGINGFACE_TOKEN` (user must accept the Gemma license on the HF UI).
+- **`gemma`** — local CPU inference of `gemma-4-E2B-it.litertlm` (2.58 GB) through `litert-lm-api`. First run downloads the gated bundle from `litert-community/gemma-4-E2B-it-litert-lm` via `huggingface_hub` using `HUGGINGFACE_TOKEN` (user must accept the Gemma license on the HF UI).
 
 Both backends expose the same OpenAI-shape `chat.completions.create` so the agent loop, cassettes, and tests don't care which one is driving.
 

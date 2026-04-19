@@ -1,6 +1,6 @@
-"""Gemma (mobile E2B) backend — loads the same ``.litertlm`` bundle that
-``gemmaclaw`` runs on-device, but via the desktop ``litert-lm-api`` Python
-wheel (macOS / Linux, CPU inference). No phone required.
+"""Gemma (mobile E2B) backend — loads the on-device ``.litertlm`` bundle
+through the desktop ``litert-lm-api`` Python wheel (macOS / Linux, CPU
+inference). No phone required.
 
 The bundle comes from ``litert-community/gemma-4-E2B-it-litert-lm``; the
 default file is ``gemma-4-E2B-it.litertlm`` (2.58 GB). First run downloads
