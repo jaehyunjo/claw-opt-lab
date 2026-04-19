@@ -5,7 +5,8 @@ A stripped-down agent skeleton for **LLM optimization experiments** — routing 
 - **47 tool schemas** preserved from upstream so the LLM sees a realistic tool surface
 - **All tool handlers mocked** — no real filesystem / network / process side effects
 - **79 skills** indexed into the system prompt for skill-aware behavior
-- **Cassette record/replay** — hit Azure OpenAI once, replay instantly thereafter
+- **Cassette record/replay** — hit the backend once, replay instantly thereafter
+- **Switchable backends** — cloud Azure OpenAI (`gpt-5-mini`) or on-desktop Gemma (`gemma-4-E2B-it.litertlm` via LiteRT-LM, same weights [`gemmaclaw`](https://github.com/jaehyunjo/gemmaclaw) runs on-device)
 - **16 Korean scenario demos** covering email, web research, code exec, file ops, cron, vision, and more
 
 ## Quick start
@@ -14,8 +15,9 @@ A stripped-down agent skeleton for **LLM optimization experiments** — routing 
 git clone <this repo>
 cd claw-opt-lab
 ./run.sh setup                         # python -m venv + pip install -e ".[dev]"
-cp .env.example .env                   # fill in Azure creds for live/record modes
-./run.sh demo                          # replay 16 pre-recorded scenarios (~0s)
+cp .env.example .env                   # fill in Azure and/or HuggingFace creds
+./run.sh demo                          # replay 16 pre-recorded Azure scenarios (~0s)
+./run.sh demo --backend gemma          # replay Gemma cassettes (offline)
 ./run.sh test                          # pytest
 ```
 
@@ -49,39 +51,57 @@ claw-opt-lab/
 ├── core/
 │   ├── shim.py              # MagicMock deleted modules; monkey-patch registry
 │   ├── azure.py             # AzureOpenAI client (env-driven)
+│   ├── gemma.py             # LiteRT-LM Gemma-4 E2B client (same .litertlm as gemmaclaw)
+│   ├── backends.py          # Backend factory: azure | gemma → (client, deployment)
 │   ├── agent.py             # Agent loop: LLM → tool dispatch → repeat
-│   ├── cassette.py          # Record/replay Azure responses
+│   ├── cassette.py          # Record/replay backend responses (backend-agnostic)
 │   ├── prompt.py            # System prompt + skills index
 │   └── skill_loader.py      # Scan skills/**/SKILL.md
 ├── tools/                   # 21 self-registering tool modules (handlers mocked)
 │   ├── registry.py          # Tool registry (unchanged from upstream)
 │   └── ...
 ├── skills/                  # 79 bundled skills (SKILL.md + helpers)
-├── cassettes/               # Recorded Azure responses — one JSON per scenario
+├── cassettes/
+│   ├── azure/               # Recorded Azure responses — one JSON per scenario
+│   └── gemma/               # Recorded Gemma LiteRT-LM responses
+├── models/                  # Cached .litertlm bundles (gitignored, ~2.6 GB)
 ├── hermes_constants.py      # Path helpers used by some tool files
 └── tests/                   # pytest suite
 ```
 
-## Three execution modes
+## Two backends
 
-| Mode     | Azure?  | Cassette | Use when                          |
-|----------|---------|----------|-----------------------------------|
-| `replay` | no      | read     | default — fast, deterministic, no API cost |
-| `record` | yes     | write    | after changing scenarios, prompts, schemas, or mocks |
-| `live`   | yes     | —        | ad-hoc probing of the live model  |
+| Backend  | Where it runs           | What drives inference                                  |
+|----------|-------------------------|--------------------------------------------------------|
+| `azure`  | cloud                   | Azure OpenAI `gpt-5-mini` via the `openai` SDK         |
+| `gemma`  | local CPU (macOS/Linux) | `litert-lm-api` loads `gemma-4-E2B-it.litertlm` directly — the same bundle `gemmaclaw` ships on-device |
+
+Both expose the same OpenAI-shape `chat.completions.create` to the agent loop, so the record/replay cassette layer, tests, and scenario table don't care which one you pick.
 
 ```bash
-./run.sh demo                               # replay (default)
-./run.sh demo --mode record                 # re-record every scenario
-./run.sh demo --mode record --scenario vision,cronjob
-./run.sh demo --mode live --prompt "자유 질문"
+./run.sh demo                                          # Azure replay (default)
+./run.sh demo --backend gemma                          # Gemma replay
+./run.sh demo --backend gemma --mode live --scenario email
+./run.sh demo --backend gemma --mode record            # record all 16 Gemma cassettes
 ```
 
-Cassettes live under `cassettes/<scenario>.json` — check them in so anyone can run the demo without Azure credentials. Re-record when you change prompts/schemas; the cassette format is line-diffable JSON.
+The Gemma tool-call surface is emulated: tool JSON schemas are injected into the system prompt as text, and the adapter parses a JSON block out of the reply back into OpenAI-shape `tool_calls`. That keeps the agent loop identical across backends.
+
+## Three execution modes
+
+| Mode     | Live LLM? | Cassette | Use when                                |
+|----------|-----------|----------|-----------------------------------------|
+| `replay` | no        | read     | default — fast, deterministic, no cost  |
+| `record` | yes       | write    | after changing scenarios, prompts, schemas, or mocks |
+| `live`   | yes       | —        | ad-hoc probing of the live backend      |
+
+Cassettes live under `cassettes/<backend>/<scenario>.json` — check them in so anyone can run the demo without credentials. Re-record when you change prompts/schemas; the cassette format is line-diffable JSON.
 
 ## Environment
 
-`.env` keys (only needed for `record` / `live`):
+`.env` keys (each block only needed for `record` / `live` on that backend):
+
+**Azure**
 
 | Var                          | Example                                       |
 |------------------------------|-----------------------------------------------|
@@ -89,6 +109,17 @@ Cassettes live under `cassettes/<scenario>.json` — check them in so anyone can
 | `AZURE_OPENAI_ENDPOINT`      | `https://YOUR-RESOURCE.openai.azure.com`      |
 | `AZURE_OPENAI_DEPLOYMENT`    | your deployment name (e.g. `gpt-5-mini`)      |
 | `AZURE_OPENAI_API_VERSION`   | `2024-10-21` (default)                        |
+
+**Gemma (LiteRT-LM)**
+
+| Var                          | Example                                                  |
+|------------------------------|----------------------------------------------------------|
+| `HUGGINGFACE_TOKEN`          | `hf_…` — accept the Gemma license on the HF UI first     |
+| `GEMMA_HF_REPO`              | `litert-community/gemma-4-E2B-it-litert-lm` (default)    |
+| `GEMMA_MODEL_FILE`           | `gemma-4-E2B-it.litertlm` (default, 2.58 GB)             |
+| `GEMMA_MODEL_PATH`           | optional — absolute path to a local `.litertlm` override |
+
+First `--backend gemma` run downloads the bundle into `./models/` (gitignored) and takes a few minutes; subsequent runs reuse the cached file.
 
 ## Scenarios (all 16)
 
@@ -126,11 +157,24 @@ Cassettes live under `cassettes/<scenario>.json` — check them in so anyone can
 
 ## Extending
 
-- **Routing experiment**: add `core/router.py` with `(messages, tools, context_budget) → (client, deployment)`; route between `core.azure.get_client()` and an on-device OpenAI-compatible endpoint (ollama / vLLM / llama.cpp).
+- **Routing experiment**: the `core.backends` factory already picks between Azure and Gemma; drop in a `core/router.py` with `(messages, tools, context_budget) → backend_name` that calls `get_backend(...)` at each turn. Because both backends are swapped in via the same `client` param to `run_conversation`, the agent loop doesn't change.
 - **Measurement**: wrap `cli.chat.completions.create(...)` in `core/agent.py` to log token counts, latency, and cost per call.
 - **Better mocks**: add entries to `_TOOL_OVERRIDES` in `core/shim.py` — the LLM works with whatever shape you return.
 - **RAG**: hook upstream of `build_system_prompt()` in `core.prompt` — retrieve chunks, inject before the skills section.
-- **New scenarios**: append a `Scenario(...)` to the list in `demo.py`, then re-record with `--mode record --scenario <name>`.
+- **New scenarios**: append a `Scenario(...)` to the list in `demo.py`, then re-record with `--mode record --scenario <name>` (per backend).
+
+### Known trade-offs for the Gemma backend
+
+- **Context budget**: Gemma-4 E2B was trained at 4K tokens; the adapter extends `Engine(max_num_tokens=16384)`, but quality still degrades past the trained length. The full 79-skill system prompt (~5K tokens) plus 47 tool schemas rendered by the chat template would overflow that budget, so for Gemma the skill listing is trimmed to 10 entries via `build_system_prompt(max_skills=10)` and tool descriptions are truncated to `GEMMA_TOOL_DESC_MAX=120` chars per field. Azure keeps the full 79.
+- **Tool-call surface**: Gemma's trained `<|tool_call>` format is exercised via `litert_lm.Engine.create_conversation(tools=[...])`. The 47 agent-side JSON schemas are fed through a lightweight callable synthesizer (`core/gemma.py:_synthesize_callable`) so the engine's introspection still yields the correct OpenAI schema. A `ToolEventHandler` captures the model's tool choice and the synthesized callable raises `_ToolCallIntercepted`, so the outer agent loop handles dispatch through the mock registry — same semantics as Azure.
+- **Model load time**: first `--backend gemma` run downloads ~2.6 GB into `./models/` and then takes ~60 s to load the bundle into RAM (~3 GB resident). Subsequent scenarios reuse the shared `Engine` singleton, so per-scenario inference is dominated by prefill/decode rather than load. On M-series CPU a full 16-scenario record takes ~50 min.
+- **Metal/GPU backend (`GEMMA_BACKEND=GPU`)** works end-to-end on Apple Silicon and cuts per-scenario time by ~6×, but LiteRT-LM's current GPU sampler path occasionally emits a truncated `<|tool_call>` that the engine parser rejects (`Failed to parse tool calls from response`). Left as CPU-default for now; revisit when `litert-lm-api` ships a WebGPU sampler.
+- **Known scenario quirks (Gemma cassettes as-recorded)**:
+  - `file-explore` — model picks `execute_code` instead of `search_files`.
+  - `multi-step` — model chains `terminal` twice instead of `write_file → terminal`.
+  - `skill-arxiv` — model picks `execute_code` instead of `terminal`.
+  - `todo` — the model sometimes emits mixed prose + a malformed `<|tool_call>` block, which the LiteRT-LM parser rejects mid-generation. The adapter catches that `RuntimeError`, returns empty text, and the agent loop continues; the recorded cassette captures a later successful `todo` call. Rerun `--mode record --scenario todo` if you want a cleaner take.
+  The Azure cassettes pass all 16; Gemma cassettes replay at **13/16** for the right reasons. The three fails are about Gemma's tool-choice behavior, not the agent loop — they're prompt-engineering work, recorded as-is.
 
 ## Tests
 
