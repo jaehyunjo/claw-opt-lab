@@ -1,178 +1,155 @@
-<p align="center">
-  <img src="assets/banner.png" alt="Hermes Agent" width="100%">
-</p>
+# claw-opt-lab
 
-# Hermes Agent ☤
+A stripped-down agent skeleton for **LLM optimization experiments** — routing (on-device vs cloud), small-context prompt assembly, RAG, cost measurement. Forked from [hermes-agent](https://github.com/NousResearch/hermes-agent) (MIT) and reduced to the bare bones needed to observe agent-loop + tool-call behavior end-to-end.
 
-<p align="center">
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
-  <a href="https://nousresearch.com"><img src="https://img.shields.io/badge/Built%20by-Nous%20Research-blueviolet?style=for-the-badge" alt="Built by Nous Research"></a>
-</p>
+- **47 tool schemas** preserved from upstream so the LLM sees a realistic tool surface
+- **All tool handlers mocked** — no real filesystem / network / process side effects
+- **79 skills** indexed into the system prompt for skill-aware behavior
+- **Cassette record/replay** — hit Azure OpenAI once, replay instantly thereafter
+- **16 Korean scenario demos** covering email, web research, code exec, file ops, cron, vision, and more
 
-**The self-improving AI agent built by [Nous Research](https://nousresearch.com).** It's the only agent with a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions. Run it on a $5 VPS, a GPU cluster, or serverless infrastructure that costs nearly nothing when idle. It's not tied to your laptop — talk to it from Telegram while it works on a cloud VM.
-
-Use any model you want — [Nous Portal](https://portal.nousresearch.com), [OpenRouter](https://openrouter.ai) (200+ models), [NVIDIA NIM](https://build.nvidia.com) (Nemotron), [Xiaomi MiMo](https://platform.xiaomimimo.com), [z.ai/GLM](https://z.ai), [Kimi/Moonshot](https://platform.moonshot.ai), [MiniMax](https://www.minimax.io), [Hugging Face](https://huggingface.co), OpenAI, or your own endpoint. Switch with `hermes model` — no code changes, no lock-in.
-
-<table>
-<tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
-<tr><td><b>Lives where you do</b></td><td>Telegram, Discord, Slack, WhatsApp, Signal, and CLI — all from a single gateway process. Voice memo transcription, cross-platform conversation continuity.</td></tr>
-<tr><td><b>A closed learning loop</b></td><td>Agent-curated memory with periodic nudges. Autonomous skill creation after complex tasks. Skills self-improve during use. FTS5 session search with LLM summarization for cross-session recall. <a href="https://github.com/plastic-labs/honcho">Honcho</a> dialectic user modeling. Compatible with the <a href="https://agentskills.io">agentskills.io</a> open standard.</td></tr>
-<tr><td><b>Scheduled automations</b></td><td>Built-in cron scheduler with delivery to any platform. Daily reports, nightly backups, weekly audits — all in natural language, running unattended.</td></tr>
-<tr><td><b>Delegates and parallelizes</b></td><td>Spawn isolated subagents for parallel workstreams. Write Python scripts that call tools via RPC, collapsing multi-step pipelines into zero-context-cost turns.</td></tr>
-<tr><td><b>Runs anywhere, not just your laptop</b></td><td>Six terminal backends — local, Docker, SSH, Daytona, Singularity, and Modal. Daytona and Modal offer serverless persistence — your agent's environment hibernates when idle and wakes on demand, costing nearly nothing between sessions. Run it on a $5 VPS or a GPU cluster.</td></tr>
-<tr><td><b>Research-ready</b></td><td>Batch trajectory generation, Atropos RL environments, trajectory compression for training the next generation of tool-calling models.</td></tr>
-</table>
-
----
-
-## Quick Install
+## Quick start
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+git clone <this repo>
+cd claw-opt-lab
+./run.sh setup                         # python -m venv + pip install -e ".[dev]"
+cp .env.example .env                   # fill in Azure creds for live/record modes
+./run.sh demo                          # replay 16 pre-recorded scenarios (~0s)
+./run.sh test                          # pytest
 ```
 
-Works on Linux, macOS, WSL2, and Android via Termux. The installer handles the platform-specific setup for you.
+```
+Hermes skeleton scenario demo
+[config]
+  mode                         replay
+  cassette dir                 cassettes
 
-> **Android / Termux:** The tested manual path is documented in the [Termux guide](https://hermes-agent.nousresearch.com/docs/getting-started/termux). On Termux, Hermes installs a curated `.[termux]` extra because the full `.[all]` extra currently pulls Android-incompatible voice dependencies.
->
-> **Windows:** Native Windows is not supported. Please install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run the command above.
+Tools: 47   Skills: 79   System prompt: 20495 chars   max_iterations=6
 
-After installation:
+── [1/16] email ──
+expect:   clarify → send_message
+[user]    Gmail로 jaehyun.jo@gmail.com에 메일 한 통 보내줘. ...
+  → call  clarify({"question": "지금 바로 메일을 전송해도 될까요?", ...})
+  ← result {"ok": true, "tool": "clarify", "user_response": "yes", ...}
+  → call  send_message({"action": "send", "target": "gmail:jaehyun.jo@gmail.com", ...})
+  ← result {"ok": true, "tool": "send_message", "status": "sent", ...}
+[assistant]
+  메일을 보냈습니다. ...
+[stats]  iterations=3  tools=2  pass=✓
+```
+
+## Layout
+
+```
+claw-opt-lab/
+├── main.py                  # REPL entry point
+├── demo.py                  # 16-scenario demo with record/replay
+├── run.sh                   # bash wrapper (setup / demo / test / repl)
+├── core/
+│   ├── shim.py              # MagicMock deleted modules; monkey-patch registry
+│   ├── azure.py             # AzureOpenAI client (env-driven)
+│   ├── agent.py             # Agent loop: LLM → tool dispatch → repeat
+│   ├── cassette.py          # Record/replay Azure responses
+│   ├── prompt.py            # System prompt + skills index
+│   └── skill_loader.py      # Scan skills/**/SKILL.md
+├── tools/                   # 21 self-registering tool modules (handlers mocked)
+│   ├── registry.py          # Tool registry (unchanged from upstream)
+│   └── ...
+├── skills/                  # 79 bundled skills (SKILL.md + helpers)
+├── cassettes/               # Recorded Azure responses — one JSON per scenario
+├── hermes_constants.py      # Path helpers used by some tool files
+└── tests/                   # pytest suite
+```
+
+## Three execution modes
+
+| Mode     | Azure?  | Cassette | Use when                          |
+|----------|---------|----------|-----------------------------------|
+| `replay` | no      | read     | default — fast, deterministic, no API cost |
+| `record` | yes     | write    | after changing scenarios, prompts, schemas, or mocks |
+| `live`   | yes     | —        | ad-hoc probing of the live model  |
 
 ```bash
-source ~/.bashrc    # reload shell (or: source ~/.zshrc)
-hermes              # start chatting!
+./run.sh demo                               # replay (default)
+./run.sh demo --mode record                 # re-record every scenario
+./run.sh demo --mode record --scenario vision,cronjob
+./run.sh demo --mode live --prompt "자유 질문"
 ```
 
----
+Cassettes live under `cassettes/<scenario>.json` — check them in so anyone can run the demo without Azure credentials. Re-record when you change prompts/schemas; the cassette format is line-diffable JSON.
 
-## Getting Started
+## Environment
+
+`.env` keys (only needed for `record` / `live`):
+
+| Var                          | Example                                       |
+|------------------------------|-----------------------------------------------|
+| `AZURE_OPENAI_API_KEY`       | your Azure key (don't commit)                 |
+| `AZURE_OPENAI_ENDPOINT`      | `https://YOUR-RESOURCE.openai.azure.com`      |
+| `AZURE_OPENAI_DEPLOYMENT`    | your deployment name (e.g. `gpt-5-mini`)      |
+| `AZURE_OPENAI_API_VERSION`   | `2024-10-21` (default)                        |
+
+## Scenarios (all 16)
+
+```
+./run.sh demo --list
+
+  ●  email           expect: clarify → send_message
+  ●  web-research    expect: web_search → web_extract
+  ●  file-explore    expect: search_files → read_file
+  ●  code-exec       expect: execute_code
+  ●  memory          expect: memory
+  ●  todo            expect: todo
+  ●  image-gen       expect: image_generate
+  ●  multi-step      expect: write_file → terminal
+  ●  skill-arxiv     expect: terminal (arxiv API)
+  ●  vision          expect: vision_analyze
+  ●  delegate        expect: delegate_task
+  ●  web-extract     expect: web_extract
+  ●  cronjob         expect: cronjob
+  ●  session-search  expect: session_search
+  ●  skills-list     expect: skills_list
+  ●  ambiguous       expect: clarify
+```
+
+(● = cassette present, ○ = missing. 16/16 cassettes ship with the repo.)
+
+## How the mock stack works
+
+1. `core.shim.install_shim()` registers a `sys.meta_path` finder that returns `MagicMock` for every deleted internal package (`run_agent`, `hermes_cli`, `gateway`, `agent.*`, …) and every heavy external dep (`exa_py`, `fal_client`, `firecrawl`, …). Tool files import freely.
+2. The same call monkey-patches `tools.registry.registry.register(...)` — every handler becomes `_make_mock_handler(name, schema)`, `is_async` is forced to `False`, `check_fn` is forced to `lambda: True`.
+3. Mock handlers validate args against the tool's JSON schema, then return either a generic `{"ok": true, "tool": "X", "args": args, "mock": true}` envelope or a richer override payload (see `_TOOL_OVERRIDES` in `core/shim.py` — cronjob, vision, web_search, etc. return realistic-looking shapes so the model accepts the result and moves on).
+4. `tools.registry.discover_builtin_tools()` AST-scans `tools/*.py` and imports every self-registering module. Result: 47 mock tools available to the model.
+
+**No tool has a real side effect.** `terminal("rm -rf /")`, `write_file(...)`, `send_message(...)`, `cronjob(action="create", ...)`, `curl ...` — all return mock success in 0ms without touching the host.
+
+## Extending
+
+- **Routing experiment**: add `core/router.py` with `(messages, tools, context_budget) → (client, deployment)`; route between `core.azure.get_client()` and an on-device OpenAI-compatible endpoint (ollama / vLLM / llama.cpp).
+- **Measurement**: wrap `cli.chat.completions.create(...)` in `core/agent.py` to log token counts, latency, and cost per call.
+- **Better mocks**: add entries to `_TOOL_OVERRIDES` in `core/shim.py` — the LLM works with whatever shape you return.
+- **RAG**: hook upstream of `build_system_prompt()` in `core.prompt` — retrieve chunks, inject before the skills section.
+- **New scenarios**: append a `Scenario(...)` to the list in `demo.py`, then re-record with `--mode record --scenario <name>`.
+
+## Tests
 
 ```bash
-hermes              # Interactive CLI — start a conversation
-hermes model        # Choose your LLM provider and model
-hermes tools        # Configure which tools are enabled
-hermes config set   # Set individual config values
-hermes gateway      # Start the messaging gateway (Telegram, Discord, etc.)
-hermes setup        # Run the full setup wizard (configures everything at once)
-hermes claw migrate # Migrate from OpenClaw (if coming from OpenClaw)
-hermes update       # Update to the latest version
-hermes doctor       # Diagnose any issues
+./run.sh test                          # 16 tests, ~15s (integration tests skip w/o Azure key)
+./run.sh test tests/test_shim.py -v
 ```
 
-📖 **[Full documentation →](https://hermes-agent.nousresearch.com/docs/)**
+| Suite | Covers |
+|-------|--------|
+| `test_shim.py`            | MagicMock import resolution; mock handler validation + success envelope |
+| `test_skill_loader.py`    | SKILL.md frontmatter parsing; real skills/ load |
+| `test_agent_loop.py`      | Agent loop with fake Azure client (plain text / tool call / max-iterations) |
+| `test_azure_integration.py` | Real Azure round-trip — skipped without `AZURE_OPENAI_API_KEY` |
 
-## CLI vs Messaging Quick Reference
+## Attribution
 
-Hermes has two entry points: start the terminal UI with `hermes`, or run the gateway and talk to it from Telegram, Discord, Slack, WhatsApp, Signal, or Email. Once you're in a conversation, many slash commands are shared across both interfaces.
+Forked from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) (MIT). Upstream is a full-featured agent with messaging gateway, IDE integrations, skills hub, cron scheduler, RL training, and more. This fork strips ~99% of that down to a minimal skeleton for optimization experiments.
 
-| Action | CLI | Messaging platforms |
-|---------|-----|---------------------|
-| Start chatting | `hermes` | Run `hermes gateway setup` + `hermes gateway start`, then send the bot a message |
-| Start fresh conversation | `/new` or `/reset` | `/new` or `/reset` |
-| Change model | `/model [provider:model]` | `/model [provider:model]` |
-| Set a personality | `/personality [name]` | `/personality [name]` |
-| Retry or undo the last turn | `/retry`, `/undo` | `/retry`, `/undo` |
-| Compress context / check usage | `/compress`, `/usage`, `/insights [--days N]` | `/compress`, `/usage`, `/insights [days]` |
-| Browse skills | `/skills` or `/<skill-name>` | `/skills` or `/<skill-name>` |
-| Interrupt current work | `Ctrl+C` or send a new message | `/stop` or send a new message |
-| Platform-specific status | `/platforms` | `/status`, `/sethome` |
-
-For the full command lists, see the [CLI guide](https://hermes-agent.nousresearch.com/docs/user-guide/cli) and the [Messaging Gateway guide](https://hermes-agent.nousresearch.com/docs/user-guide/messaging).
-
----
-
-## Documentation
-
-All documentation lives at **[hermes-agent.nousresearch.com/docs](https://hermes-agent.nousresearch.com/docs/)**:
-
-| Section | What's Covered |
-|---------|---------------|
-| [Quickstart](https://hermes-agent.nousresearch.com/docs/getting-started/quickstart) | Install → setup → first conversation in 2 minutes |
-| [CLI Usage](https://hermes-agent.nousresearch.com/docs/user-guide/cli) | Commands, keybindings, personalities, sessions |
-| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | Config file, providers, models, all options |
-| [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging) | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant |
-| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Command approval, DM pairing, container isolation |
-| [Tools & Toolsets](https://hermes-agent.nousresearch.com/docs/user-guide/features/tools) | 40+ tools, toolset system, terminal backends |
-| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | Procedural memory, Skills Hub, creating skills |
-| [Memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | Persistent memory, user profiles, best practices |
-| [MCP Integration](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | Connect any MCP server for extended capabilities |
-| [Cron Scheduling](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron) | Scheduled tasks with platform delivery |
-| [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) | Project context that shapes every conversation |
-| [Architecture](https://hermes-agent.nousresearch.com/docs/developer-guide/architecture) | Project structure, agent loop, key classes |
-| [Contributing](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) | Development setup, PR process, code style |
-| [CLI Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | All commands and flags |
-| [Environment Variables](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) | Complete env var reference |
-
----
-
-## Migrating from OpenClaw
-
-If you're coming from OpenClaw, Hermes can automatically import your settings, memories, skills, and API keys.
-
-**During first-time setup:** The setup wizard (`hermes setup`) automatically detects `~/.openclaw` and offers to migrate before configuration begins.
-
-**Anytime after install:**
-
-```bash
-hermes claw migrate              # Interactive migration (full preset)
-hermes claw migrate --dry-run    # Preview what would be migrated
-hermes claw migrate --preset user-data   # Migrate without secrets
-hermes claw migrate --overwrite  # Overwrite existing conflicts
-```
-
-What gets imported:
-- **SOUL.md** — persona file
-- **Memories** — MEMORY.md and USER.md entries
-- **Skills** — user-created skills → `~/.hermes/skills/openclaw-imports/`
-- **Command allowlist** — approval patterns
-- **Messaging settings** — platform configs, allowed users, working directory
-- **API keys** — allowlisted secrets (Telegram, OpenRouter, OpenAI, Anthropic, ElevenLabs)
-- **TTS assets** — workspace audio files
-- **Workspace instructions** — AGENTS.md (with `--workspace-target`)
-
-See `hermes claw migrate --help` for all options, or use the `openclaw-migration` skill for an interactive agent-guided migration with dry-run previews.
-
----
-
-## Contributing
-
-We welcome contributions! See the [Contributing Guide](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) for development setup, code style, and PR process.
-
-Quick start for contributors:
-
-```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv venv --python 3.11
-source venv/bin/activate
-uv pip install -e ".[all,dev]"
-python -m pytest tests/ -q
-```
-
-> **RL Training (optional):** To work on the RL/Tinker-Atropos integration:
-> ```bash
-> git submodule update --init tinker-atropos
-> uv pip install -e "./tinker-atropos"
-> ```
-
----
-
-## Community
-
-- 💬 [Discord](https://discord.gg/NousResearch)
-- 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
-- 💡 [Discussions](https://github.com/NousResearch/hermes-agent/discussions)
-- 🔌 [HermesClaw](https://github.com/AaronWong1999/hermesclaw) — Community WeChat bridge: Run Hermes Agent and OpenClaw on the same WeChat account.
-
----
-
-## License
+Tool schemas, skill content, and the `tools/registry.py` layer are preserved verbatim from upstream.
 
 MIT — see [LICENSE](LICENSE).
-
-Built by [Nous Research](https://nousresearch.com).
